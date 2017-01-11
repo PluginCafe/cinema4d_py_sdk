@@ -1,9 +1,9 @@
 """
 RoundedTube
 Copyright: MAXON Computer GmbH
-Written for Cinema 4D R13.058
+Written for Cinema 4D R18
 
-Modified Date: 26/04/2012
+Modified Date: 10/01/2017
 """
 
 import os
@@ -20,12 +20,12 @@ class RoundedTube(plugins.ObjectData):
     """RoundedTube Generator"""
 
     HANDLECOUNT = 5
-    
-    
+
+
     def __init__(self):
         self.SetOptimizeCache(True)
-    
-    
+
+
     @staticmethod
     def SetAxis(op, axis):
         if axis is c4d.PRIM_AXIS_YP: return
@@ -49,8 +49,8 @@ class RoundedTube(plugins.ObjectData):
                 op.SetPoint(i, c4d.Vector(p.x, p.z, -p.y))
         
         op.Message(c4d.MSG_UPDATE)
-    
-    
+
+
     @staticmethod
     def SwapPoint(p, axis):
         if axis is c4d.PRIM_AXIS_XP:
@@ -66,9 +66,9 @@ class RoundedTube(plugins.ObjectData):
         return p
     
     
-    def GetHandleCount(op):
-        return RoundedTube.HANDLECOUNT
-    
+    def GetHandleCount(self, op):
+        return self.HANDLECOUNT
+
 
     def GetHandle(self, op, i, info):
         
@@ -108,7 +108,10 @@ class RoundedTube(plugins.ObjectData):
         data = op.GetDataInstance()
         if data is None: return
         
-        val = (p-info.position)*info.direction
+        tmp = c4d.HandleInfo()
+        self.GetHandle(op, i, tmp)
+        
+        val = (p-tmp.position)*info.direction
         
         if i is 0:
             op[c4d.PY_TUBEOBJECT_RAD] = utils.FCut(op[c4d.PY_TUBEOBJECT_RAD]+val, op[c4d.PY_TUBEOBJECT_IRADX], sys.maxint)
@@ -247,33 +250,6 @@ class RoundedTube(plugins.ObjectData):
             rad.x = rado+radx
             rad.y = rado+radx
             rad.z = rady
-
-
-    def DetectHandle(self, op, bd, x, y, qualifier):
-        if qualifier&c4d.QUALIFIER_CTRL: return c4d.NOTOK
-
-        mg = op.GetMg()
-        ret = c4d.NOTOK
-        
-        for i in xrange(self.GetHandleCount()):
-            info = c4d.HandleInfo()
-            self.GetHandle(op, i, info)
-            if bd.PointInRange(info.position*mg, x, y):
-                ret = i
-                if not qualifier&c4d.QUALIFIER_SHIFT: break
-        
-        return ret
-    
-    
-    def MoveHandle(self, op, undo, mouse_pos, hit_id, qualifier, bd):
-        mg = op.GetUpMg() * undo.GetMl()
-        
-        info = c4d.HandleInfo()
-        self.GetHandle(op, hit_id, info)
-        
-        self.SetHandle(op, hit_id, info.CalculateNewPosition(bd, mg, mouse_pos), info)
-            
-        return True
 
 
     def GetVirtualObjects(self, op, hierarchyhelp):

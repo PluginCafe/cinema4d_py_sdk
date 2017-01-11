@@ -24,14 +24,14 @@ class TextureBakerThread(threading.C4DThread):
 
         self.bakeDoc = None
         self.bakeData = None
-        self.bakeBmp = bitmaps.MultipassBitmap(256, 256, c4d.COLORMODE_RGB)
+        self.bakeBmp = bitmaps.MultipassBitmap(512, 512, c4d.COLORMODE_RGB)
         self.bakeError = c4d.BAKE_TEX_ERR_NONE
 
     # Setups and starts the texture baking thread
     def Begin(self):
         bakeData = c4d.BaseContainer()
-        bakeData[c4d.BAKE_TEX_WIDTH] = 256
-        bakeData[c4d.BAKE_TEX_HEIGHT] = 256
+        bakeData[c4d.BAKE_TEX_WIDTH] = 512
+        bakeData[c4d.BAKE_TEX_HEIGHT] = 512
         bakeData[c4d.BAKE_TEX_PIXELBORDER] = 1
         bakeData[c4d.BAKE_TEX_CONTINUE_UV] = False
         bakeData[c4d.BAKE_TEX_SUPERSAMPLING] = 0
@@ -47,6 +47,7 @@ class TextureBakerThread(threading.C4DThread):
         bakeData[c4d.BAKE_TEX_UV_RIGHT] = 1.0
         bakeData[c4d.BAKE_TEX_UV_TOP] = 0.0
         bakeData[c4d.BAKE_TEX_UV_BOTTOM] = 1.0
+        #bakeData[c4d.BAKE_TEX_OPTIMAL_MAPPING] = c4d.BAKE_TEX_OPTIMAL_MAPPING_CUBIC
 
         self.bakeData = bakeData
 
@@ -66,7 +67,8 @@ class TextureBakerThread(threading.C4DThread):
     # Texture Baker hook
     # Prints the baker progress information
     def BakeTextureHook(self, info):
-        print info
+        #print info
+        pass
 
     # Bake Texture Thread Main routine
     def Main(self):
@@ -125,26 +127,25 @@ class TextureBakerDlg(gui.GeDialog):
 
         textags = []
         texuvws = []
+        destuvws = []
 
-        objects = doc.GetActiveObjects(c4d.GETACTIVEOBJECTFLAGS_0)
-        if len(objects) == 0:
+        obj = doc.GetActiveObject()
+        if obj is None:
+            self.SetString(self.infoText, "Bake Init Failed: Select one single object")
             return
 
-        # Gather texture and UVW tags from the objects to bake
-        for obj in objects:
-            tag = obj.GetTag(c4d.Ttexture)
-            if tag is None:
-                return
-            textags.append(tag)
-
-            tag = obj.GetTag(c4d.Tuvw)
-            if tag is None:
-                return
-            texuvws.append(tag)
+        # Gather texture and UVW tags from the selected object
+        uvwTag = obj.GetTag(c4d.Tuvw)
+        tags = obj.GetTags()
+        for tag in tags:
+            if tag.CheckType(c4d.Ttexture):
+                textags.append(tag)
+                texuvws.append(uvwTag)
+                destuvws.append(uvwTag)
 
         # Initialize and start texture baker thread
         self.aborted = False
-        self.textureBakerThread = TextureBakerThread(doc, textags, texuvws, None)
+        self.textureBakerThread = TextureBakerThread(doc, textags, texuvws, destuvws)
         if not self.textureBakerThread.Begin():
             print "Bake Init Failed: Error " + str(self.textureBakerThread.bakeError)
             self.SetString(self.infoText, str("Bake Init Failed: Error " + str(self.textureBakerThread.bakeError)))
@@ -167,7 +168,7 @@ class TextureBakerDlg(gui.GeDialog):
             # Aborted?
             if not self.aborted:
                 # Not aborted
-                print "Baking Finished"
+                #print "Baking Finished"
                 self.SetString(self.infoText, str("Baking Finished"))
                 bmp = self.textureBakerThread.bakeBmp
                 if bmp:
@@ -176,7 +177,7 @@ class TextureBakerDlg(gui.GeDialog):
                 return True
             else:
                 # Aborted
-                print "Baking Aborted"
+                #print "Baking Aborted"
                 self.SetString(self.infoText, str("Baking Aborted"))
 
             return True

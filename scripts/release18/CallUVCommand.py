@@ -13,22 +13,19 @@ def main():
         return
 
     # Prints UVSet information
-    print "UV handle data:"
-    print "handle:", handle
-    print "handle Mode:", handle.GetMode()
-    print "handle Points:", handle.GetPoints()
-    print "handle Polygons:", handle.GetPolys()
-    print "handle Polygon selection:", handle.GetPolySel()
-    print "handle hidden Polygons:", handle.GetPolyHid()
-    print "handle Point selection:", handle.GetUVPointSel()
-    print "handle Point count:", handle.GetPointCount()
-    print "handle Polygon count:", handle.GetPolyCount()
-    print "handle Object:", handle.GetBaseObject()
-    print "handle Editable:", handle.IsEditable()
-    uvw = handle.GetUVW()
-    print "handle UVW:", uvw
-    print "handle set UVW:", handle.SetUVW(uvw)
-    print "handle set UVW (from texture view):", handle.SetUVWFromTextureView(uvw, True, True, True)
+    print "UV Handle Data:"
+    print "Handle:", handle
+    print "Handle Mode:", handle.GetMode()
+    print "Handle Points:", handle.GetPoints()
+    print "Handle Polygons:", handle.GetPolys()
+    print "Handle Polygon Selection:", handle.GetPolySel()
+    print "Handle Hidden Polygons:", handle.GetPolyHid()
+    print "Handle Point Selection:", handle.GetUVPointSel()
+    print "Handle Point Count:", handle.GetPointCount()
+    print "Handle Polygon Count:", handle.GetPolyCount()
+    print "Handle Object:", handle.GetBaseObject()
+    print "Handle Editable:", handle.IsEditable()
+    print "Handle UVW:", handle.GetUVW()
 
     # Builds UVCOMMAND_TRANSFORM container for the command settings
     settings = c4d.BaseContainer()
@@ -36,18 +33,24 @@ def main():
     settings[c4d.UVCOMMAND_TRANSFORM_MOVE_Y] = 0
     settings[c4d.UVCOMMAND_TRANSFORM_SCALE_X] = 1
     settings[c4d.UVCOMMAND_TRANSFORM_SCALE_Y] = 1
-    settings[c4d.UVCOMMAND_TRANSFORM_ANGLE] = utils.Rad(90)
+    settings[c4d.UVCOMMAND_TRANSFORM_ANGLE] = utils.DegToRad(90)
 
-    # Calls UVCOMMAND_TRANSFORM
-    ret = bodypaint.CallUVCommand(handle.GetPoints(), handle.GetPointCount(), handle.GetPolys(), handle.GetPolyCount(), 
-                                  handle.GetUVW(), handle.GetPolySel(), handle.GetUVPointSel(), op, handle.GetMode(), c4d.UVCOMMAND_TRANSFORM, settings)
+    # Retrieves UVW list
+    uvw = handle.GetUVW()
+    if uvw is None:
+        return
+
+    # Calls UVCOMMAND_TRANSFORM to change UVW list
+    ret = bodypaint.CallUVCommand(handle.GetPoints(), handle.GetPointCount(), handle.GetPolys(), handle.GetPolyCount(), uvw,
+                                  handle.GetPolySel(), handle.GetUVPointSel(), op, handle.GetMode(), c4d.UVCOMMAND_TRANSFORM, settings)
     if not ret:
         print "CallUVCommand() failed!"
         return
 
-    # Tries to set UVW from Texture View
     print "CallUVCommand() successfully called"
-    if handle.SetUVWFromTextureView(handle.GetUVW(), True, True, True):
+
+    # Sets the transformedUVW from Texture View 
+    if handle.SetUVWFromTextureView(uvw, True, True, True):
         print "UVW from Texture View successfully set"
     else:
         print "UVW from Texture View failed to be set!"

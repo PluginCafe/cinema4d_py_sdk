@@ -1,9 +1,9 @@
 """
 Double Circle
 Copyright: MAXON Computer GmbH
-Written for Cinema 4D R13.058
+Written for Cinema 4D R18
 
-Modified Date: 18/04/2012
+Modified Date: 10/01/2017
 """
 
 import math
@@ -51,8 +51,8 @@ class DoubleCircleData(plugins.ObjectData):
         return p
     
     
-    def GetHandleCount(op):
-        return DoubleCircleData.HANDLECOUNT
+    def GetHandleCount(self, op):
+        return self.HANDLECOUNT
     
     
     def GetHandle(self, op, i, info):
@@ -74,8 +74,8 @@ class DoubleCircleData(plugins.ObjectData):
         val = p*info.direction
         
         data.SetReal(c4d.PYCIRCLEOBJECT_RAD, utils.FCut(val, 0.0, sys.maxint))
-
-
+    
+    
     def Draw(self, op, drawpass, bd, bh):
         if drawpass!=c4d.DRAWPASS_HANDLES: return c4d.DRAWRESULT_SKIP
         
@@ -96,34 +96,6 @@ class DoubleCircleData(plugins.ObjectData):
         bd.DrawLine(info.position, c4d.Vector(0), 0)
         
         return c4d.DRAWRESULT_OK
-    
-    
-    def DetectHandle(self, op, bd, x, y, qualifier):
-        if qualifier&c4d.QUALIFIER_CTRL: return c4d.NOTOK
-        
-        mg = op.GetMg()
-        ret = c4d.NOTOK
-        
-        for i in xrange(self.GetHandleCount()):
-            info = c4d.HandleInfo()
-            self.GetHandle(op, i, info)
-            if bd.PointInRange(info.position*mg, x, y):
-                ret = i
-                if not qualifier&c4d.QUALIFIER_SHIFT: break
-
-        return ret
-    
-    
-    def MoveHandle(self, op, undo, mouse_pos, hit_id, qualifier, bd):
-        
-        mg = op.GetUpMg() * undo.GetMl()
-        
-        info = c4d.HandleInfo()
-        self.GetHandle(op, hit_id, info)
-        
-        self.SetHandle(op, hit_id, info.CalculateNewPosition(bd, mg, mouse_pos), info)
-        
-        return True
     
     
     def GenerateCircle(self, rad):
