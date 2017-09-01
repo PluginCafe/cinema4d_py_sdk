@@ -22,7 +22,6 @@ def main():
     op = {}
     # Send MSG_RETRIEVEPRIVATEDATA to Alembic export plugin
     if plug.Message(c4d.MSG_RETRIEVEPRIVATEDATA, op):
-        print op
         if "imexporter" not in op:
             return
         

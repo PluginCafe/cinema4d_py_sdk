@@ -1,16 +1,16 @@
 """
 Double Circle
 Copyright: MAXON Computer GmbH
-Written for Cinema 4D R18
+Written for Cinema 4D R19
 
-Modified Date: 10/01/2017
+Modified Date: 31/08/2017
 """
 
 import math
 import sys
 import os
 import c4d
-from c4d import plugins, utils, bitmaps
+from c4d import bitmaps, gui, plugins, utils
 
 # Be sure to use a unique ID obtained from www.plugincafe.com
 PLUGIN_ID = 1025245
@@ -215,8 +215,18 @@ class DoubleCircleData(plugins.ObjectData):
             return inter==c4d.SPLINEOBJECT_INTERPOLATION_ADAPTIVE or inter==c4d.SPLINEOBJECT_INTERPOLATION_SUBDIV
         elif id[0].id==c4d.SPLINEOBJECT_MAXIMUMLENGTH:
             return inter==c4d.SPLINEOBJECT_INTERPOLATION_SUBDIV
-        
+
         return True
+
+
+def DoubleCircleHelp(opType, baseType, group, property):
+    # Prints the information passed to the plugin help callback
+    print "Py-DoubleCircle - Help:", opType, baseType, group, property
+    if property == "PYCIRCLEOBJECT_RAD":
+        # A simple MessageDialog is shown. Instead an URL to online or local help could be opened in a browser
+        gui.MessageDialog("Py - DoubleCircle - Radius of the Double Circle")
+
+    return True
 
 
 if __name__ == "__main__":
@@ -227,3 +237,6 @@ if __name__ == "__main__":
                                 g=DoubleCircleData,
                                 description="Opydoublecircle", icon=bmp,
                                 info=c4d.OBJECT_GENERATOR|c4d.OBJECT_ISSPLINE)
+
+    # Registers the plugin help callback for Py-DoubleCircle
+    plugins.RegisterPluginHelpCallback(PLUGIN_ID, DoubleCircleHelp)
