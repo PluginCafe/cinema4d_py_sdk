@@ -33,19 +33,19 @@ class RoundedTube(plugins.ObjectData):
         if padr is None: return
         
         elif axis is c4d.PRIM_AXIS_XP:
-            for p in padr:
+            for i, p in enumerate(padr):
                 op.SetPoint(i, c4d.Vector( p.y, -p.x, p.z))
         elif axis is c4d.PRIM_AXIS_XN:
-            for p in padr:
+            for i, p in enumerate(padr):
                 op.SetPoint(i, c4d.Vector(-p.y, p.x, p.z))
         elif axis is c4d.PRIM_AXIS_YN:
-            for p in padr:
+            for i, p in enumerate(padr):
                 op.SetPoint(i, c4d.Vector(-p.x, -p.y, p.z))
         elif axis is c4d.PRIM_AXIS_ZP:
-            for p in padr:
+            for i, p in enumerate(padr):
                 op.SetPoint(i, c4d.Vector(p.x, -p.z, p.y))
         elif axis is c4d.PRIM_AXIS_ZN:
-            for p in padr:
+            for i, p in enumerate(padr):
                 op.SetPoint(i, c4d.Vector(p.x, p.z, -p.y))
         
         op.Message(c4d.MSG_UPDATE)
