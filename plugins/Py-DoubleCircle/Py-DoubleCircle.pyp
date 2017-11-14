@@ -103,7 +103,7 @@ class DoubleCircleData(plugins.ObjectData):
         sn = 0
         TANG = 0.415
         
-        op = c4d.SplineObject(sub*2, c4d.Thermite)
+        op = c4d.SplineObject(sub*2, c4d.SPLINETYPE_BEZIER)
         if not op: return None
         
         op.MakeVariableTag(c4d.Tsegment, 2)
