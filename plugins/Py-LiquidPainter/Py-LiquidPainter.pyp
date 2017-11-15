@@ -3,7 +3,7 @@ Liquid Painter
 Copyright: MAXON Computer GmbH
 Written for Cinema 4D R12.016
 
-Modified Date: 08/30/2010
+Modified Date: 15/11/2017
 """
 
 import c4d
@@ -20,29 +20,27 @@ IDS_PRIMITIVETOOL = 50000
 
 
 class SettingsDialog(gui.SubDialog):
-    R = 0
-    sphere_size = 15
+    parameters = None
 
     def __init__(self, arg):
-        self.sphere_size = arg
+        self.parameters = arg
 
     def CreateLayout(self):
         self.GroupBegin(id=1000, flags=c4d.BFH_SCALEFIT, cols=2, rows=1)
         self.GroupBorderSpace(10, 10, 10, 10)
         self.element = self.AddStaticText(id=1001, flags=c4d.BFH_MASK, initw=120, name="Sphere Size", borderstyle=c4d.BORDER_NONE)
 
-        value = self.sphere_size['sphere_size']
+        value = self.parameters['sphere_size']
 
-        self.R = self.AddEditNumberArrows(id=1002, flags=c4d.BFH_MASK)
-        self.SetReal(id=1002, value=self.sphere_size['sphere_size'], min=0, max=20)
-        self.SetReal(1002, value)
+        self.AddEditNumberArrows(id=1002, flags=c4d.BFH_MASK)
+        self.SetReal(id=1002, value=value, min=0, max=20)
         self.GroupEnd()
         return True
 
 
     def Command(self, id, msg):
         if id==1002:
-            self.sphere_size['sphere_size'] = self.GetLong(1002)
+            self.parameters['sphere_size'] = self.GetLong(1002)
         
         return True
 
@@ -51,7 +49,7 @@ class LiquidTool(plugins.ToolData):
     """Inherit from ToolData to create your own tool"""
 
     def __init__(self):
-        self.data = dict(sphere_size=15)
+        self.data = {'sphere_size':15}
     
     
     def GetState(self, doc):
