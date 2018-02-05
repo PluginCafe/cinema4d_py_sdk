@@ -170,9 +170,13 @@ class DoubleCircleData(plugins.ObjectData):
                     op.SetTangent(i, vl, vr)
         
         if reverse:
+            # Get points after plane changes
+            points = op.GetAllPoints()
+            
             to = pcnt/float(2)
             if pcnt%2:
                 to+=1
+            
             for i, point in enumerate(points[:int(to)]):
                 op.SetPoint(i, points[pcnt-1-i])
                 op.SetPoint(pcnt-1-i, point)
