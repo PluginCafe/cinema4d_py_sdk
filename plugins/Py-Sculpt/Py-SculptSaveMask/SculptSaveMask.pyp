@@ -73,7 +73,7 @@ def DrawSpan(bmp, span, y):
     if span.x2 > bmp.GetBw():
         return;
     
-    for x in xrange(math.floor(span.x1), math.ceil(span.x2)):
+    for x in xrange(int(math.floor(span.x1)), int(math.ceil(span.x2))):
         col = span.color1 + (colordiff * factor)
         bmp.SetPixel(x,y, int(col.x * 255), int(col.y * 255), int(col.z * 255))
         factor += factorStep
@@ -107,7 +107,7 @@ def DrawSpansBetweenEdges(bmp, e1, e2):
     factorStep2 = 1.0 / e2ydiff
 
     # loop through the lines between the edges and draw spans
-    for y in xrange(e2.y1, e2.y2): 
+    for y in xrange(int(e2.y1), int(e2.y2)): 
         # create and draw span
         span  = Span(e1.color1 + (e1colordiff * factor1), e1.x1 + int(e1xdiff * factor1), e2.color1 + (e2colordiff * factor2), e2.x1 + int(e2xdiff * factor2))
         DrawSpan(bmp, span, y)
