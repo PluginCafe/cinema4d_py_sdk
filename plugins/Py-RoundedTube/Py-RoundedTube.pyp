@@ -64,7 +64,18 @@ class RoundedTube(plugins.ObjectData):
         elif axis is c4d.PRIM_AXIS_ZN:
             return c4d.Vector(p.x, p.z, -p.y)
         return p
-    
+
+
+    def Message(self, node, type, data):
+        if type == c4d.MSG_DESCRIPTION_VALIDATE:
+            node[c4d.PY_TUBEOBJECT_IRADX] = c4d.utils.ClampValue(node[c4d.PY_TUBEOBJECT_IRADX], 0.0, node[c4d.PY_TUBEOBJECT_RAD])
+            node[c4d.PY_TUBEOBJECT_ROUNDRAD] = c4d.utils.ClampValue( node[c4d.PY_TUBEOBJECT_ROUNDRAD], 0.0, node[c4d.PY_TUBEOBJECT_IRADX])
+
+        elif type == c4d.MSG_MENUPREPARE:
+            node.SetPhong(True, False, c4d.utils.DegToRad(40.0))
+
+        return True
+
     
     def GetHandleCount(self, op):
         return self.HANDLECOUNT
