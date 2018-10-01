@@ -20,7 +20,7 @@ def CreateCubes(p, size, scale, depth):
                 position = c4d.Vector(x*sx,y*sy, z*sz)
                 if end:
                     cube = c4d.BaseObject(c4d.Oinstance)
-                    cube[c4d.INSTANCEOBJECT_RENDERINSTANCE] = True
+                    cube[c4d.INSTANCEOBJECT_RENDERINSTANCE_MODE] = c4d.INSTANCEOBJECT_RENDERINSTANCE_MODE_SINGLEINSTANCE
                     cube[c4d.INSTANCEOBJECT_LINK] = op[c4d.ID_USERDATA, 1]
                     cube.SetRelPos(position)
                     cube.SetRelScale(c4d.Vector(scale))

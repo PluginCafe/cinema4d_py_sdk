@@ -51,7 +51,7 @@ def main():
 
                 cube2 = c4d.BaseObject(c4d.Oinstance)
                 cube2[c4d.INSTANCEOBJECT_LINK] = clone
-                cube2[c4d.INSTANCEOBJECT_RENDERINSTANCE] = True
+                cube2[c4d.INSTANCEOBJECT_RENDERINSTANCE_MODE] = c4d.INSTANCEOBJECT_RENDERINSTANCE_MODE_SINGLEINSTANCE
                 cube2.InsertUnder(par)
 
                 mtag = cube2.MakeTag(c4d.Ttexture)
