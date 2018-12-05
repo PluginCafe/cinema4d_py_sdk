@@ -3,7 +3,7 @@ RoundedTube
 Copyright: MAXON Computer GmbH
 Written for Cinema 4D R18
 
-Modified Date: 10/01/2017
+Modified Date: 05/12/2018
 """
 
 import os
@@ -19,13 +19,17 @@ PLUGIN_ID = 1025250
 class RoundedTube(plugins.ObjectData):
     """RoundedTube Generator"""
 
+
+    # define the number of handles that will be drawn, it's actually a constant.
     HANDLECOUNT = 5
 
 
+    # Enable few optimizations, take a look at the GetVirtualObjects method for more information.
     def __init__(self):
         self.SetOptimizeCache(True)
 
 
+    # Helper method to set the local axis of the object.
     @staticmethod
     def SetAxis(op, axis):
         if axis is c4d.PRIM_AXIS_YP: return
@@ -51,6 +55,7 @@ class RoundedTube(plugins.ObjectData):
         op.Message(c4d.MSG_UPDATE)
 
 
+    # Helper method to determine how point should be swapped according to the local axis.
     @staticmethod
     def SwapPoint(p, axis):
         if axis is c4d.PRIM_AXIS_XP:
@@ -66,21 +71,49 @@ class RoundedTube(plugins.ObjectData):
         return p
 
 
+    # Override method, called when the object is initialized to set default values.
+    def Init(self, op):
+        self.InitAttr(op, float, [c4d.PY_TUBEOBJECT_RAD])
+        self.InitAttr(op, float, [c4d.PY_TUBEOBJECT_IRADX])
+        self.InitAttr(op, float, [c4d.PY_TUBEOBJECT_IRADY])
+        self.InitAttr(op, float, [c4d.PY_TUBEOBJECT_SUB])
+        self.InitAttr(op, int, [c4d.PY_TUBEOBJECT_ROUNDSUB])
+        self.InitAttr(op, float, [c4d.PY_TUBEOBJECT_ROUNDRAD])
+        self.InitAttr(op, int, [c4d.PY_TUBEOBJECT_SEG])
+        self.InitAttr(op, int, [c4d.PRIM_AXIS])
+
+        op[c4d.PY_TUBEOBJECT_RAD]= 200.0
+        op[c4d.PY_TUBEOBJECT_IRADX] = 50.0
+        op[c4d.PY_TUBEOBJECT_IRADY] = 50.0
+        op[c4d.PY_TUBEOBJECT_SUB] = 1
+        op[c4d.PY_TUBEOBJECT_ROUNDSUB] = 8
+        op[c4d.PY_TUBEOBJECT_ROUNDRAD] = 10.0
+        op[c4d.PY_TUBEOBJECT_SEG] = 36
+        op[c4d.PRIM_AXIS] = c4d.PRIM_AXIS_YP
+        return True
+
+
+    # Override method, react to some messages received to react to some event.
     def Message(self, node, type, data):
+
+        # MSG_DESCRIPTION_VALIDATE is called after each parameter change. It allows checking of the input value to correct it if not.
         if type == c4d.MSG_DESCRIPTION_VALIDATE:
             node[c4d.PY_TUBEOBJECT_IRADX] = c4d.utils.ClampValue(node[c4d.PY_TUBEOBJECT_IRADX], 0.0, node[c4d.PY_TUBEOBJECT_RAD])
             node[c4d.PY_TUBEOBJECT_ROUNDRAD] = c4d.utils.ClampValue( node[c4d.PY_TUBEOBJECT_ROUNDRAD], 0.0, node[c4d.PY_TUBEOBJECT_IRADX])
 
+        # MSH_MENUPREPARE is called when the user presses the Menu entry for this object. It allows to setup our object. In this case, it defines the Phong by adding a Phong Tag to the generator.
         elif type == c4d.MSG_MENUPREPARE:
             node.SetPhong(True, False, c4d.utils.DegToRad(40.0))
 
         return True
 
-    
+
+    # Override method, should return the number of handle.
     def GetHandleCount(self, op):
         return self.HANDLECOUNT
 
 
+    # Override method, called to know the position of a handle.
     def GetHandle(self, op, i, info):
         
         rad = op[c4d.PY_TUBEOBJECT_RAD]
@@ -115,6 +148,7 @@ class RoundedTube(plugins.ObjectData):
         info.type = c4d.HANDLECONSTRAINTTYPE_LINEAR
 
 
+    # Override method, called when the user moves a handle. This is the place to set parameters.
     def SetHandle(self, op, i, p, info):
         data = op.GetDataInstance()
         if data is None: return
@@ -134,6 +168,7 @@ class RoundedTube(plugins.ObjectData):
             op[c4d.PY_TUBEOBJECT_ROUNDRAD] = utils.FCut(op[c4d.PY_TUBEOBJECT_ROUNDRAD]+val, 0.0, min(op[c4d.PY_TUBEOBJECT_IRADX], op[c4d.PY_TUBEOBJECT_IRADY]))
     
     
+    # Override method, draw additional stuff in the viewport (e.g. the handles).
     def Draw(self, op, drawpass, bd, bh):
         if drawpass!=c4d.DRAWPASS_HANDLES: return c4d.DRAWRESULT_SKIP
 
@@ -173,27 +208,7 @@ class RoundedTube(plugins.ObjectData):
         return c4d.DRAWRESULT_OK
 
 
-    def Init(self, op):
-        self.InitAttr(op, float, [c4d.PY_TUBEOBJECT_RAD])
-        self.InitAttr(op, float, [c4d.PY_TUBEOBJECT_IRADX])
-        self.InitAttr(op, float, [c4d.PY_TUBEOBJECT_IRADY])
-        self.InitAttr(op, float, [c4d.PY_TUBEOBJECT_SUB])
-        self.InitAttr(op, int, [c4d.PY_TUBEOBJECT_ROUNDSUB])
-        self.InitAttr(op, float, [c4d.PY_TUBEOBJECT_ROUNDRAD])
-        self.InitAttr(op, int, [c4d.PY_TUBEOBJECT_SEG])
-        self.InitAttr(op, int, [c4d.PRIM_AXIS])
-
-        op[c4d.PY_TUBEOBJECT_RAD]= 200.0
-        op[c4d.PY_TUBEOBJECT_IRADX] = 50.0
-        op[c4d.PY_TUBEOBJECT_IRADY] = 50.0
-        op[c4d.PY_TUBEOBJECT_SUB] = 1
-        op[c4d.PY_TUBEOBJECT_ROUNDSUB] = 8
-        op[c4d.PY_TUBEOBJECT_ROUNDRAD] = 10.0
-        op[c4d.PY_TUBEOBJECT_SEG] = 36
-        op[c4d.PRIM_AXIS] = c4d.PRIM_AXIS_YP
-        return True
-
-
+    # Helper method to generate a lathe over points.
     def GenerateLathe(self, cpadr, cpcnt, sub):
         op = tag = padr = vadr = None
         i = j = pcnt = vcnt = a = b = c = d = 0
@@ -237,6 +252,7 @@ class RoundedTube(plugins.ObjectData):
         return op
 
 
+    # Override method, should return the bounding box of the generated object.
     def GetDimension(self, op, mp, rad):
         rado = op[c4d.PY_TUBEOBJECT_RAD]
         if rado is None: return
@@ -263,6 +279,7 @@ class RoundedTube(plugins.ObjectData):
             rad.z = rady
 
 
+    # Override method, should generate and return the object.
     def GetVirtualObjects(self, op, hierarchyhelp):
 
         # Disabled the following lines because cache flag was set
@@ -324,10 +341,17 @@ class RoundedTube(plugins.ObjectData):
         return ret
 
 
+ # This code is called at the startup, it register the class RoundedTube as a plugin to be used later in Cinema 4D. It have to be done only once.
 if __name__ == "__main__":
+
+    # Get the curren path of the file
     dir, file = os.path.split(__file__)
+
+    # Load the oroundedtube.tif from res folder as a c4d BaseBitmap to be used as an icon.
     icon = bitmaps.BaseBitmap()
     icon.InitWith(os.path.join(dir, "res", "oroundedtube.tif"))
+
+    # Register the class RoundedTube as a Object Plugin to be used later in Cinema 4D.
     plugins.RegisterObjectPlugin(id=PLUGIN_ID, str="Py-RoundedTube",
                                 g=RoundedTube,
                                 description="roundedtube", icon=icon,
