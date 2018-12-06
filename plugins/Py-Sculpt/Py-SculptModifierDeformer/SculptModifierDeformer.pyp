@@ -1,9 +1,12 @@
 import c4d, os
 import random
-from c4d import plugins, utils, bitmaps, guifrom c4d.modules import sculpting as sculpt
+from c4d import plugins, utils, bitmaps, gui
+from c4d.modules import sculpting as sculpt
+
 # be sure to use a unique ID obtained from www.plugincafe.com
 PLUGIN_ID = 1031586 
-ID_SCULPT_BRUSH_PULL_MODIFIER = 1030505
+ID_SCULPT_BRUSH_PULL_MODIFIER = 1030505
+
 class SculptModifierDeformer(plugins.ObjectData):
 
 	brushInterface = None
@@ -72,9 +75,11 @@ class SculptModifierDeformer(plugins.ObjectData):
 
 		op.Message(c4d.MSG_UPDATE)
 		
-		return True
+		return True
+
 if __name__ == "__main__":
     plugins.RegisterObjectPlugin(id=PLUGIN_ID, str="Py-SculptModifierDeformer",
                                 g=SculptModifierDeformer,
                                 description="opysculptmodifierdeformer", icon=None,
-                                info=c4d.OBJECT_MODIFIER)
+                                info=c4d.OBJECT_MODIFIER)
+
