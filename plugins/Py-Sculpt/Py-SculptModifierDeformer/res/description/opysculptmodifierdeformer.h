@@ -1,5 +1,6 @@
 #ifndef _Opysculptmodifierdeformer_H_
-#define _Opysculptmodifierdeformer_H_
+#define _Opysculptmodifierdeformer_H_
+
 enum
 {
 	PYSCULPTMODIFIERDEFORMER_RADIUS			= 1000,
@@ -10,5 +11,6 @@ enum
 	PYSCULPTMODIFIERDEFORMER_STAMP_USEFALLOFF = 1007,
 	PYSCULPTMODIFIERDEFORMER_SEED = 1008,
 	PYSCULPTMODIFIERDEFORMER_STAMP_ROTATION = 1009,
-};
+};
+
 #endif
